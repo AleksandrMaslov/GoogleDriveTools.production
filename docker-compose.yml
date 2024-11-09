@@ -73,17 +73,17 @@ services:
   database:
     container_name: ${DATABASE_DOMAIN}
     image: postgres:11
-    # command:
-    #   - "postgres"
-    #   - "-c"
-    #   - "config_file=/etc/postgresql.conf"
+    command:
+      - "postgres"
+      - "-c"
+      - "config_file=/etc/postgresql.conf"
     restart: always
     expose:
       - ${DATABASE_PORT}
     volumes:
       - database-data:/var/lib/postgresql/data
       - ./postgres/init:/docker-entrypoint-initdb.d
-      # - ./postgres/postgresql.conf:/etc/postgresql.conf:ro
+      - ./postgres/postgresql.conf:/etc/postgresql.conf:ro
     networks:
       - secure-network
     healthcheck:
