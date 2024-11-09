@@ -23,6 +23,7 @@ services:
       - CLIENT_PORT=${CLIENT_PORT}
       - SERVICE_DOMAIN=${SERVICE_DOMAIN}
       - SERVICE_PORT=${SERVICE_PORT}
+      - SERVICE_API_PATH=${SERVICE_API_PATH}
 
   client:
     container_name: ${CLIENT_DOMAIN}
@@ -30,7 +31,7 @@ services:
       context: ./client
       dockerfile: ../docker/Dockerfile.client.light
       args:
-        - SERVICE_URL=${PROTOCOL}://${DOMAIN}/api
+        - SERVICE_URL=${PROTOCOL}://${DOMAIN}${SERVICE_API_PATH}
         - CLIENT_ID=${CLIENT_ID}
         - CLIENT_PORT=${CLIENT_PORT}
     restart: always
@@ -44,6 +45,7 @@ services:
       - CLIENT_DOMAIN=${CLIENT_DOMAIN}
       - CLIENT_PORT=${CLIENT_PORT}
       - CLIENT_ID=${CLIENT_ID}
+      - SERVICE_API_PATH=${SERVICE_API_PATH}
 
   service:
     container_name: ${SERVICE_DOMAIN}
