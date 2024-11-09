@@ -77,19 +77,30 @@ services:
     expose:
       - ${DATABASE_PORT}
     volumes:
-      - database:/var/lib/postgresql/data
+      - database-data:/var/lib/postgresql/data
       - ./postgres/initpg.sh:/docker-entrypoint-initdb.d/initpg.sh
     networks:
       - secure-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s    
     environment:
       - DATABASE_DOMAIN=${DATABASE_DOMAIN}
       - DATABASE_PORT=${DATABASE_PORT}
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '1'
+    #       memory: 4G
 
 volumes:
-  database:
+  database-data:
 
 networks:
   external-network:
