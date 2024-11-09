@@ -12,7 +12,7 @@ RUN npm i
 
 COPY . .
 
-RUN node -e "const fs = require('fs');const path = require('path'); function findFiles(dir, regex) { const results = []; fs.readdirSync(dir, { withFileTypes: true }).forEach((entry) => { const fullPath = path.join(dir, entry.name); if (regex.test(fullPath)) results.push(fullPath); }); return results; } const files = findFiles('.', /^.*\/inde.*\.js$/); if (files.length) { files.forEach((file) => { const data = fs.readFileSync(file, 'utf-8'); const newValue = data.replace('SERVICE_API_PATH', '${SERVICE_API_PATH}'); fs.writeFileSync(file, newValue, 'utf-8'); }); }"
+RUN node -e "const fs = require('fs');const path = require('path'); function findFiles(dir, regex) { const results = []; fs.readdirSync(dir, { withFileTypes: true }).forEach((entry) => { const fullPath = path.join(dir, entry.name); if (regex.test(fullPath)) results.push(fullPath); }); return results; } const files = findFiles(process.cwd(), /^.*\/inde.*\.js$/); if (files.length) { files.forEach((file) => { const data = fs.readFileSync(file, 'utf-8'); const newValue = data.replace('SERVICE_API_PATH', '${SERVICE_API_PATH}'); fs.writeFileSync(file, newValue, 'utf-8'); }); }"
 
 EXPOSE ${SERVICE_PORT}
 
