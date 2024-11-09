@@ -46,34 +46,10 @@ const run = async () => {
     }
   })
 
-  app.get('/api/increment/set-increment', async (req, res) => {
-    console.log('Set request /api');
-
-    try {
-      const last = await client.query('select i from mytable order by i desc limit 1')
-      let toInsert = 0
-      if (last.rows.length === 0) {
-        toInsert = 1
-      } else {
-        toInsert = last.rows[0].i + 1
-      }
-      await client.query('insert into mytable (i) values ($1)', [toInsert])
-      res.send('increment updated')
-    } catch (error) {
-      res.send(`${error.message}`)
-    }
+  app.get('/*', async (req, res) => {
+    res.send('API not found')
   })
 
-  app.get('/api/increment/get-increment', async (req, res) => {
-    console.log('Get request /api');
-
-    try {
-      const result = await client.query('select max(i) from mytable')
-      res.send({ max: result.rows[0].max })
-    } catch (error) {
-      res.send(`${error.message}`)
-    }
-  })
 
   app.listen(PORT, () => { console.log(`App listening at port: ${PORT}`) })
 }
