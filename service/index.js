@@ -12,6 +12,8 @@ app.use(cors());
 app.options('*', cors());
 
 const run = async () => {
+  console.log(`API_PATH: ${API_PATH}`);
+
   await client.connect()
   console.log('DB client connected');
 
