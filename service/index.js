@@ -5,6 +5,7 @@ const cors = require('cors');
 const client = require('./client')
 
 const PORT = process.env.SERVICE_PORT || 5000
+const API_PATH = 'SERVICE_API_PATH'
 
 const app = express()
 app.use(cors());
@@ -17,7 +18,7 @@ const run = async () => {
   await client.query('CREATE TABLE IF NOT EXISTS mytable (i integer);')
   console.log('Table created');
 
-  app.get('/api/increment/set-increment', async (req, res) => {
+  app.get(`${API_PATH}/set-increment`, async (req, res) => {
     console.log('Set request /api/increment');
 
     try {
@@ -35,7 +36,7 @@ const run = async () => {
     }
   })
 
-  app.get('/api/increment/get-increment', async (req, res) => {
+  app.get(`${API_PATH}/get-increment`, async (req, res) => {
     console.log('Get request /api/increment');
 
     try {
