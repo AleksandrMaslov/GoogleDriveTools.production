@@ -16,6 +16,9 @@ const run = async () => {
   await client.connect()
   console.log('DB client connected');
 
+  await client.query('CREATE TABLE IF NOT EXISTS mytable (i integer);')
+  console.log('Table created');
+
   app.get(`${API_PATH}/set-increment`, async (req, res) => {
     console.log('Set request /api/increment');
 
