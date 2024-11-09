@@ -2,6 +2,8 @@
 set -e
 
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
-    CREATE DATABASE "$POSTGRES_DB";
-    CREATE TABLE mytable (i integer);
+    CREATE DATABASE IF NOT EXISTS "$POSTGRES_DB";
+
+    USE "$POSTGRES_DB";
+    CREATE TABLE mytable (i INT);
 EOSQL
