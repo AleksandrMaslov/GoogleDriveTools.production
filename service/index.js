@@ -46,8 +46,6 @@ const run = async () => {
     }
   })
 
-  app.use(function(req, res) { res.send('API not found'); });
-
   app.listen(PORT, () => { console.log(`App listening at port: ${PORT}`) })
 }
 
