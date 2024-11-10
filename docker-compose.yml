@@ -136,10 +136,18 @@ services:
           memory: 4G
 
   adminer:
-      container_name: adminer
-      image: dockette/adminer
-      ports:
-        - 8080:80
+    container_name: adminer
+    image: dockette/adminer
+    restart: always
+    depends_on:
+      - ${DATABASE_DOMAIN}
+    ports:
+      - 8080:80
+    networks:
+      - external-network
+      - secure-network
+    environment:
+      - DATABASE_DOMAIN=${DATABASE_DOMAIN}
 
   admin:
     container_name: ${ADMIN_DOMAIN}
