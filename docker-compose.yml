@@ -135,6 +135,12 @@ services:
           cpus: '1'
           memory: 4G
 
+  adminer:
+      container_name: adminer
+      image: dockette/adminer
+      ports:
+        - 8080:80
+
   admin:
     container_name: ${ADMIN_DOMAIN}
     image: dpage/pgadmin4:latest
@@ -154,6 +160,7 @@ services:
       - DATABASE_DOMAIN=${DATABASE_DOMAIN}
       - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+      - PGADMIN_LISTEN_PORT=80
       - PGADMIN_CONFIG_SERVER_MODE=False
       - PGADMIN_DISABLE_POSTFIX=True
       - PGADMIN_CONFIG_CHECK_EMAIL_DELIVERABILITY=False
