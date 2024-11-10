@@ -160,7 +160,6 @@ services:
       - PGADMIN_LISTEN_PORT=${ADMIN_PORT}
       - PGADMIN_CONFIG_SERVER_MODE=True
       - PGADMIN_DISABLE_POSTFIX=True
-      - SCRIPT_NAME=/pgadmin4
     # deploy:
     #   resources:
     #     limits:
