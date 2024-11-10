@@ -146,8 +146,6 @@ services:
     networks:
       - external-network
       - secure-network
-    ports:
-      - "${ADMIN_PORT}:80"
     expose:
       - ${ADMIN_PORT}
     environment:
