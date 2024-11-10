@@ -139,6 +139,8 @@ services:
     container_name: ${ADMIN_DOMAIN}
     image: dpage/pgadmin4:7.2
     restart: always
+    depends_on:
+      - ${DATABASE_DOMAIN}
     volumes:
       - admin-data:/var/lib/pgadmin    
     networks:
@@ -149,6 +151,7 @@ services:
     environment:
       - ADMIN_DOMAIN=${ADMIN_DOMAIN}
       - ADMIN_PORT=${ADMIN_PORT}
+      - DATABASE_DOMAIN=${DATABASE_DOMAIN}
       - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
       - PGADMIN_CONFIG_SERVER_MODE=False
