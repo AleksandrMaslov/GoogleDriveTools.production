@@ -158,11 +158,11 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
       - PGADMIN_CONFIG_SERVER_MODE="True"
       - PGADMIN_LISTEN_PORT=${ADMIN_PORT}
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 1G
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '0.5'
+    #       memory: 1G
 
 volumes:
   database-data:
