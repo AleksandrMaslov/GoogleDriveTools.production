@@ -57,7 +57,6 @@ services:
       dockerfile: ../docker/Dockerfile.service.light
       args:
         - SERVICE_PORT=${SERVICE_PORT}
-        - PG_STRING=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DATABASE_DOMAIN}:${DATABASE_PORT}/${POSTGRES_DB}?schema=public&connect_timeout=300
     restart: always
     depends_on:
       database:
@@ -71,11 +70,21 @@ services:
     environment:
       - SERVICE_DOMAIN=${SERVICE_DOMAIN}
       - SERVICE_PORT=${SERVICE_PORT}
-      - DATABASE_DOMAIN=${DATABASE_DOMAIN}
-      - DATABASE_PORT=${DATABASE_PORT}
-      - POSTGRES_DB=${POSTGRES_DB}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+
+  prisma:
+    container_name: prisma
+    build:
+      context: ./service/prisma
+      dockerfile: ../docker/Dockerfile.prisma
+      args:
+        - PG_STRING=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DATABASE_DOMAIN}:${DATABASE_PORT}/${POSTGRES_DB}?schema=public&connect_timeout=300
+    depends_on:
+      database:
+        condition: service_started
+        restart: true
+      service:
+        condition: service_started
+        restart: true
 
   database:
     container_name: ${DATABASE_DOMAIN}

@@ -1,0 +1,14 @@
+FROM node:18-alpine
+
+ARG PG_STRING
+ENV PG_STRING=${PG_STRING}
+
+WORKDIR /app
+
+COPY . ./prisma
+
+RUN node -e "const fs = require('fs');const path = require('path'); function findFiles(dir, regex) { const results = []; fs.readdirSync(dir, { withFileTypes: true }).forEach((entry) => { const fullPath = path.join(dir, entry.name); if (regex.test(fullPath)) results.push(fullPath); }); return results; } const prismaFiles = findFiles(process.cwd() + '/prisma/schema/', /^.*\/schema.*\.prisma$/); if (files.length) { prismaFiles.forEach((file) => { const data = fs.readFileSync(file, 'utf-8'); const newValue = data.replace('PG_STRING_DEV', 'PG_STRING'); fs.writeFileSync(file, newValue, 'utf-8'); }); }"
+
+RUN npm i prisma
+
+CMD npx prisma migrate deploy
