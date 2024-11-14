@@ -11,5 +11,5 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("PG_STRING")
+  url      = env("PG_STRING_DEV")
 }
