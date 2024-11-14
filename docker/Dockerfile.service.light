@@ -16,4 +16,4 @@ EXPOSE ${SERVICE_PORT}
 
 CMD [ "node", "index.js" ]
 
-ENTRYPOINT ["/bin/bash", "./migrate.sh"]
+ENTRYPOINT ["./migrate.sh"]
