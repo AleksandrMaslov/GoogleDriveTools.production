@@ -15,5 +15,3 @@ RUN npm i -g prisma
 EXPOSE ${SERVICE_PORT}
 
 CMD [ "node", "index.js" ]
-
-ENTRYPOINT ["./migrate.sh"]
