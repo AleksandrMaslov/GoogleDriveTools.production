@@ -75,7 +75,7 @@ services:
     container_name: prisma
     build:
       context: ./service/prisma
-      dockerfile: ../docker/Dockerfile.prisma
+      dockerfile: ../../docker/Dockerfile.prisma
       args:
         - PG_STRING=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DATABASE_DOMAIN}:${DATABASE_PORT}/${POSTGRES_DB}?schema=public&connect_timeout=300
     depends_on:
