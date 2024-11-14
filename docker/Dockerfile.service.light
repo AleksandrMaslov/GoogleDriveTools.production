@@ -12,10 +12,8 @@ RUN node -e "const fs = require('fs');const path = require('path'); function fin
 
 RUN npm i -g prisma
 
-RUN npx prisma generate
-
-ENTRYPOINT ["/bin/bash", "./migrate.sh"]
-
 EXPOSE ${SERVICE_PORT}
 
 CMD [ "node", "index.js" ]
+
+ENTRYPOINT ["/bin/bash", "./migrate.sh"]
