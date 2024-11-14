@@ -57,7 +57,6 @@ services:
       dockerfile: ../docker/Dockerfile.service.light
       args:
         - SERVICE_PORT=${SERVICE_PORT}
-        - PG_STRING=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DATABASE_DOMAIN}:${DATABASE_PORT}/${POSTGRES_DB}
     restart: always
     depends_on:
       - ${DATABASE_DOMAIN}
