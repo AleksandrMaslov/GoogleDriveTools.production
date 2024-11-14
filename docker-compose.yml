@@ -57,7 +57,7 @@ services:
       dockerfile: ../docker/Dockerfile.service.light
       args:
         - SERVICE_PORT=${SERVICE_PORT}
-        - PG_STRING=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DATABASE_DOMAIN}:${DATABASE_PORT}/${POSTGRES_DB}
+        - PG_STRING=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DATABASE_DOMAIN}:${DATABASE_PORT}/${POSTGRES_DB}?schema=public?connect_timeout=300
     restart: always
     depends_on:
       - ${DATABASE_DOMAIN}
@@ -70,7 +70,6 @@ services:
       - SERVICE_DOMAIN=${SERVICE_DOMAIN}
       - SERVICE_PORT=${SERVICE_PORT}
       - DATABASE_DOMAIN=${DATABASE_DOMAIN}
-      - PG_STRING=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DATABASE_DOMAIN}:${DATABASE_PORT}/${POSTGRES_DB}
 
   database:
     container_name: ${DATABASE_DOMAIN}
