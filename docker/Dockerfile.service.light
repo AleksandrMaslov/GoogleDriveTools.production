@@ -11,4 +11,4 @@ RUN node -e "const fs = require('fs');const path = require('path'); function fin
 
 EXPOSE ${SERVICE_PORT}
 
-CMD [ "node", "index.cjs" ]
+CMD [ "node", "index.js" ]
