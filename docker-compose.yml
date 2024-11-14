@@ -60,7 +60,9 @@ services:
         - PG_STRING=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DATABASE_DOMAIN}:${DATABASE_PORT}/${POSTGRES_DB}?schema=public&connect_timeout=300
     restart: always
     depends_on:
-      - ${DATABASE_DOMAIN}
+      - ${DATABASE_DOMAIN}:
+          condition: service_started
+          restart: true
     expose:
       - ${SERVICE_PORT}
     networks:
