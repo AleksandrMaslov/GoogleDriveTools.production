@@ -10,6 +10,8 @@ RUN node -e "const fs = require('fs');const path = require('path'); function fin
 
 EXPOSE ${SERVICE_PORT}
 
-RUN npx prisma migrate deploy
+RUN npm i prisma
+
+RUN prisma migrate deploy
 
 CMD [ "node", "index.js" ]
