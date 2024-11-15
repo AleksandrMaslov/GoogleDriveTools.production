@@ -12,6 +12,7 @@ RUN node -e "const fs = require('fs');const path = require('path'); function fin
 
 # RUN npm i -g prisma
 # RUN npm i -g @prisma/client 
+# RUN prisma generate
 # then test npm i with full prod
 
 EXPOSE ${SERVICE_PORT}
