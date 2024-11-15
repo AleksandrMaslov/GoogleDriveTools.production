@@ -6,15 +6,15 @@ ENV PG_STRING=${PG_STRING}
 
 WORKDIR /app
 
+EXPOSE ${SERVICE_PORT}
+
+CMD [ "node", "index.js" ]
+
+RUN npm i @prisma/client
+
 COPY . .
 
 RUN node -e "const fs = require('fs');const path = require('path'); function findFiles(dir, regex) { const results = []; fs.readdirSync(dir, { withFileTypes: true }).forEach((entry) => { const fullPath = path.join(dir, entry.name); if (regex.test(fullPath)) results.push(fullPath); }); return results; } const files = findFiles(process.cwd(), /^.*\/index.*\.js$/); if (files.length) { files.forEach((file) => { const data = fs.readFileSync(file, 'utf-8'); const newValue = data.replace('SERVICE_PORT', '${SERVICE_PORT}'); fs.writeFileSync(file, newValue, 'utf-8'); }); } const prismaFiles = findFiles(process.cwd() + '/prisma/schema/', /^.*\/schema.*\.prisma$/); if (files.length) { prismaFiles.forEach((file) => { const data = fs.readFileSync(file, 'utf-8'); const newValue = data.replace('PG_STRING_DEV', 'PG_STRING'); fs.writeFileSync(file, newValue, 'utf-8'); }); }"
 
-RUN npm i prisma @prisma/client
-
-RUN prisma generate
+RUN npx prisma generate
 # then test npm i with full prod
-
-EXPOSE ${SERVICE_PORT}
-
-CMD [ "node", "index.js" ]
