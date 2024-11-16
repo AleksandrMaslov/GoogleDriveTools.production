@@ -1,0 +1,184 @@
+name: drivetools
+
+services:
+  nginx:
+    container_name: 'nginx'
+    image: nginx:latest
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/templates/nginx.conf.template
+      - /etc/letsencrypt/ssl-dhparams.pem:/etc/letsencrypt/ssl-dhparams.pem
+      - /etc/letsencrypt/options-ssl-nginx.conf:/etc/letsencrypt/options-ssl-nginx.conf
+      - /etc/letsencrypt/live/${DOMAIN}/fullchain.pem:/etc/letsencrypt/live/${DOMAIN}/fullchain.pem
+      - /etc/letsencrypt/live/${DOMAIN}/privkey.pem:/etc/letsencrypt/live/${DOMAIN}/privkey.pem
+    networks:
+      - external-network
+    environment:
+      - NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx
+      - DOMAIN=${DOMAIN}
+      - CLIENT_DOMAIN=${CLIENT_DOMAIN}
+      - CLIENT_PORT=${CLIENT_PORT}
+      - SERVICE_DOMAIN=${SERVICE_DOMAIN}
+      - SERVICE_PORT=${SERVICE_PORT}
+      - SERVICE_API_PATH=${SERVICE_API_PATH}
+      - ADMIN_DOMAIN=${ADMIN_DOMAIN}
+      - ADMIN_PORT=${ADMIN_PORT}
+      - ADMIN_PATH=${ADMIN_PATH}
+
+  client:
+    container_name: ${CLIENT_DOMAIN}
+    build:
+      context: ./client
+      dockerfile: ../docker/Dockerfile.client.light
+      args:
+        - SERVICE_URL=${PROTOCOL}://${DOMAIN}${SERVICE_API_PATH}
+        - CLIENT_ID=${CLIENT_ID}
+        - CLIENT_PORT=${CLIENT_PORT}
+    restart: always
+    expose:
+      - ${CLIENT_PORT}
+    networks:
+      - external-network
+    environment:
+      - PROTOCOL=${PROTOCOL}
+      - DOMAIN=${DOMAIN}
+      - CLIENT_DOMAIN=${CLIENT_DOMAIN}
+      - CLIENT_PORT=${CLIENT_PORT}
+      - CLIENT_ID=${CLIENT_ID}
+      - SERVICE_API_PATH=${SERVICE_API_PATH}
+
+  service:
+    container_name: ${SERVICE_DOMAIN}
+    build:
+      context: ./service
+      dockerfile: ../docker/Dockerfile.service.light
+      args:
+        - SERVICE_PORT=${SERVICE_PORT}
+        - PG_STRING=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DATABASE_DOMAIN}:${DATABASE_PORT}/${POSTGRES_DB}?schema=public&connect_timeout=300
+    restart: always
+    stdin_open: true
+    tty: true
+    depends_on:
+      database:
+        condition: service_started
+        restart: true
+    expose:
+      - ${SERVICE_PORT}
+    networks:
+      - external-network
+      - secure-network
+    environment:
+      - SERVICE_DOMAIN=${SERVICE_DOMAIN}
+      - SERVICE_PORT=${SERVICE_PORT}
+      - DATABASE_DOMAIN=${DATABASE_DOMAIN}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - PG_STRING=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DATABASE_DOMAIN}:${DATABASE_PORT}/${POSTGRES_DB}?schema=public&connect_timeout=300
+
+  database:
+    container_name: ${DATABASE_DOMAIN}
+    image: postgres:11
+    command:
+      - "postgres"
+      - "-c"
+      - "max_connections=50"
+      - "-c"
+      - "shared_buffers=1GB"
+      - "-c"
+      - "effective_cache_size=4GB"
+      - "-c"
+      - "work_mem=16MB"
+      - "-c"
+      - "maintenance_work_mem=512MB"
+      - "-c"
+      - "random_page_cost=1.1"
+      - "-c"
+      - "temp_file_limit=10GB"
+      - "-c"
+      - "log_min_duration_statement=200ms"
+      - "-c"
+      - "idle_in_transaction_session_timeout=10s"
+      - "-c"
+      - "lock_timeout=1s"
+      - "-c"
+      - "statement_timeout=60s"
+      - "-c"
+      - "shared_preload_libraries=pg_stat_statements"
+      - "-c"
+      - "pg_stat_statements.max=10000"
+      - "-c"
+      - "pg_stat_statements.track=all"
+      # - "-c"
+      # - "config_file=/etc/postgresql.conf"
+    restart: always
+    expose:
+      - ${DATABASE_PORT}
+    volumes:
+      - database-data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d
+      # - ./postgres/postgresql.conf:/etc/postgresql.conf:ro
+    networks:
+      - secure-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready --username ${POSTGRES_USER} --dbname ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s    
+    environment:
+      - DATABASE_DOMAIN=${DATABASE_DOMAIN}
+      - DATABASE_PORT=${DATABASE_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 4G
+
+  admin:
+    container_name: ${ADMIN_DOMAIN}
+    image: dpage/pgadmin4:latest
+    restart: always
+    depends_on:
+      - ${DATABASE_DOMAIN}
+    volumes:
+      - admin-data:/var/lib/pgadmin    
+    networks:
+      - external-network
+      - secure-network
+    expose:
+      - ${ADMIN_PORT}
+    environment:
+      ADMIN_DOMAIN: ${ADMIN_DOMAIN}
+      ADMIN_PORT: ${ADMIN_PORT}
+      DATABASE_DOMAIN: ${DATABASE_DOMAIN}
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_CONFIG_SERVER_MODE: "True"
+      PGADMIN_LISTEN_ADDRESS: 0.0.0.0
+      PGADMIN_LISTEN_PORT: ${ADMIN_PORT}
+      PGADMIN_CONFIG_CHECK_EMAIL_DELIVERABILITY: "False"
+      PGADMIN_CONFIG_SECURITY_EMAIL_VALIDATOR_ARGS: "{\"check_deliverability\": CHECK_EMAIL_DELIVERABILITY}"
+      PGADMIN_DISABLE_POSTFIX: "True"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+
+volumes:
+  database-data:
+  admin-data:
+
+networks:
+  external-network:
+    driver: bridge
+  secure-network:
+    driver: bridge
