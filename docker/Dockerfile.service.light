@@ -23,5 +23,3 @@ COPY . .
 RUN node -e "const fs = require('fs');const path = require('path'); function findFiles(dir, regex) { const results = []; fs.readdirSync(dir, { withFileTypes: true }).forEach((entry) => { const fullPath = path.join(dir, entry.name); if (regex.test(fullPath)) results.push(fullPath); }); return results; } const files = findFiles(process.cwd(), /^.*\/index.*\.js$/); if (files.length) { files.forEach((file) => { const data = fs.readFileSync(file, 'utf-8'); const newValue = data.replace('SERVICE_PORT', '${SERVICE_PORT}').replace('PG_STRING_DUMMY', '${PG_STRING}'); fs.writeFileSync(file, newValue, 'utf-8'); }); }"
 
 RUN npx prisma generate
-
-RUN npx prisma studio
