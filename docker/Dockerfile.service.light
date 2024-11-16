@@ -1,16 +1,11 @@
 FROM node:18-alpine
 
 ARG SERVICE_PORT
-ARG STUDIO_PORT
-
 ARG PG_STRING
-ENV PG_STRING=${PG_STRING}
 
 WORKDIR /app
 
 EXPOSE ${SERVICE_PORT}
-
-EXPOSE ${STUDIO_PORT}
 
 CMD [ "node", "index.js" ]
 
@@ -19,6 +14,8 @@ COPY package.json .
 RUN npm install
 
 COPY . .
+
+ENV PG_STRING=${PG_STRING}
 
 RUN node -e "const fs = require('fs');const path = require('path'); function findFiles(dir, regex) { const results = []; fs.readdirSync(dir, { withFileTypes: true }).forEach((entry) => { const fullPath = path.join(dir, entry.name); if (regex.test(fullPath)) results.push(fullPath); }); return results; } const files = findFiles(process.cwd(), /^.*\/index.*\.js$/); if (files.length) { files.forEach((file) => { const data = fs.readFileSync(file, 'utf-8'); const newValue = data.replace('SERVICE_PORT', '${SERVICE_PORT}').replace('PG_STRING_DUMMY', '${PG_STRING}'); fs.writeFileSync(file, newValue, 'utf-8'); }); }"
 
