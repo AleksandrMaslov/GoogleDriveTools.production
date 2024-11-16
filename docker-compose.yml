@@ -85,7 +85,7 @@ services:
 
   database:
     container_name: ${DATABASE_DOMAIN}
-    image: postgres:11
+    image: postgres:17.1
     command:
       - "postgres"
       - "-c"
