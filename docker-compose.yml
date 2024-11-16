@@ -24,6 +24,8 @@ services:
       - SERVICE_DOMAIN=${SERVICE_DOMAIN}
       - SERVICE_PORT=${SERVICE_PORT}
       - SERVICE_API_PATH=${SERVICE_API_PATH}
+      - STUDIO_PORT=${STUDIO_PORT}
+      - STUDIO_PATH=${STUDIO_PATH}
       - ADMIN_DOMAIN=${ADMIN_DOMAIN}
       - ADMIN_PORT=${ADMIN_PORT}
       - ADMIN_PATH=${ADMIN_PATH}
@@ -57,6 +59,7 @@ services:
       dockerfile: ../docker/Dockerfile.service.light
       args:
         - SERVICE_PORT=${SERVICE_PORT}
+        - STUDIO_PORT=${STUDIO_PORT}
         - PG_STRING=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DATABASE_DOMAIN}:${DATABASE_PORT}/${POSTGRES_DB}?schema=public&connect_timeout=300
     restart: always
     stdin_open: true

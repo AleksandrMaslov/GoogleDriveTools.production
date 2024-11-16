@@ -1,3 +1,0 @@
-model mytable {
-  i Int @id
-}
